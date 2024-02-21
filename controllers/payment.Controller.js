@@ -22,7 +22,7 @@ const createCheckoutSession = asyncHandler(async (req, res) => {
             totalAmount:totalPrice,
         });
         
-        const line_items = [].concat(...cartItems.map(cart => cart.items)).map(item => ({
+        const line_items = cartItems[0] && cartItems[0].items.map(item => ({
             price_data: {
                 currency: 'usd',
                 product_data: {
@@ -33,7 +33,6 @@ const createCheckoutSession = asyncHandler(async (req, res) => {
             },
             quantity: item.quantity,
         }));
-
 
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ["card"],

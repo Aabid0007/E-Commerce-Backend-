@@ -37,7 +37,7 @@ const getProduct = asyncHandler(async (req, res) => {
         throw new Error('Product not found');
     }
 
-    res.status(200).json(product);
+    res.status(200).json({product});
 });
 
 

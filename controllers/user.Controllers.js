@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 
 const getUser = asyncHandler(async (req, res) => {
     const user = await User.find({role: "user"});
-    res.status(200).json(user); 
+    res.status(200).json({user}); 
 })
 
 
@@ -56,14 +56,9 @@ const loginUser = asyncHandler(async (req, res) => {
     }
     const Token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
-    res.status(200).cookie('authcookie', Token, {
-        httpOnly: true,
-        maxAge: 60 * 60 * 1000, 
-        secure: true, 
-        sameSite: 'Strict', 
-    });
+    res.cookie('userToken', Token, { httpOnly: false, maxAge: 60 * 60 * 1000  , withCredentials: true, });
 
-    res.status(200).json({ Token ,userId:user._id });
+    res.status(200).json({ userId:user._id });
 });
 
 

@@ -23,12 +23,11 @@ const getOrderByIdService = asyncHandler(async (id) => {
     }
 })
 
-
 const getUserOrderService = asyncHandler(async (userId) => {
     try {
-        const order = await Order.find({ userId });
+        const orders = await Order.find({ userId, orderStatus: "complete" });
 
-        return order;
+        return orders;
     } catch (error) {
         console.error('Error (getUserOrder):', error);
         throw error;

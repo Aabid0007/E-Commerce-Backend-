@@ -33,17 +33,18 @@ const getOrderById = asyncHandler(async (req, res) => {
     }
 });
 
+
 // get user order
 const getUserOrder = asyncHandler(async (req, res) => {
     const userId = req.params.id;
     
-    const order = await orderService.getUserOrderService(userId);
-    if (!order) {
+    const UserOrders = await orderService.getUserOrderService(userId);
+    if (!UserOrders) {
 
         res.status(404).json({ message: "order not found" });
     }
 
-    res.status(200).json({ order });
+    res.status(200).json({ UserOrders });
 });
 
 
