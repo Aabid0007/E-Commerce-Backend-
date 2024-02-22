@@ -11,7 +11,6 @@ const getProductsEndpoint = asyncHandler(async (req, res) => {
 
 // create new products
 const createProduct = asyncHandler(async (req, res) => {
-    console.log(" The request body is :", req.body);
     const { name, description, price, quantity, category } = req.body;
     const images = req.files ? req.files.map(file => file.path) : null;
 

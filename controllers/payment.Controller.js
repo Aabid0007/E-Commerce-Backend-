@@ -8,7 +8,6 @@ const Cart = require('../models/cart.Model');
 const stripe = Stripe(process.env.STRIPE_KEY);
 
 const createCheckoutSession = asyncHandler(async (req, res) => {
-
     const { cartItems, userId, totalPrice } = req.body;
    
     try {

@@ -59,11 +59,12 @@ const loginAdmin = asyncHandler(async (req, res) => {
     const token = jwt.sign({adminId:admin._id, role: admin.role},process.env.JWT_SECRET, {
         expiresIn: '1h',
     });
-    res.status(200).cookie('authcookie', token, {
-        httpOnly: true,
+    res.status(200).cookie('adminToken', token, {
+        httpOnly: false,
         maxAge: 60 * 60 * 1000, 
         secure: true, 
         sameSite: 'Strict', 
+        withCredentials: true,
     });
     
     res.status(200).json({ token });

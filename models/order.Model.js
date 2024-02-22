@@ -14,7 +14,6 @@ const orderSchema = mongoose.Schema({
     }],
     totalAmount: {
         type: Number,
-       
     },
     orderStatus: {
         type: String,
@@ -23,23 +22,16 @@ const orderSchema = mongoose.Schema({
     },
     billingAddress: {
         type: {},
-
     },
     shippingAddress: {
         type: {},
-
     },
     customerEmail: {
         type:String,
-    
       },
     orderDate: {
         type: Date,
         default: Date.now,
-    },
-    customerEmail: {
-        type: String,
-
     },
 });
 

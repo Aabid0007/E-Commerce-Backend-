@@ -138,8 +138,6 @@ const removeFromCart = async (req, res) => {
 
 
 
-
-
 module.exports ={
     addToCart,
     removeFromCart,
