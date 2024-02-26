@@ -4,7 +4,8 @@ const fs = require('fs').promises;
 
 // get All category
 const getCategorysService = async () => {
-    return await Category.find();
+    const categories = await Category.find();
+    return categories.reverse();
 };
 
 

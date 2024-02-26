@@ -17,7 +17,6 @@ const getCategorys = asyncHandler(async (req, res) => {
 
 // create new products
 const createCategory = asyncHandler(async (req, res) => {
-    console.log("The request body is:", req.body);
     const { name, description } = req.body;
     const images = req.file ? req.file.path : null;
     if (!images || !name || !description) {

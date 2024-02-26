@@ -12,7 +12,6 @@ const getUser = asyncHandler(async (req, res) => {
 
 // users register
 const usersRegister = asyncHandler(async (req, res) => {
-    console.log(" The request body is :", req.body);
     const { username, email, password, phone } = req.body;
 
     if (!username || !email || !password || !phone) {
@@ -31,7 +30,7 @@ const usersRegister = asyncHandler(async (req, res) => {
         password: hashedPassword,
         phone,
     });
-console.log(user);
+
     res.status(201).json({user})
 });
 
@@ -60,9 +59,6 @@ const loginUser = asyncHandler(async (req, res) => {
 
     res.status(200).json({ userId:user._id });
 });
-
-
-
 
 
 

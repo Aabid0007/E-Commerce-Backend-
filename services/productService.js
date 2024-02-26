@@ -7,32 +7,12 @@ const getProducts = async (categoryId) => {
     try {
         const aggregationPipeline = [
             {
-                $lookup: {
-                    from: 'categories',
-                    localField: 'category',
-                    foreignField: '_id',
-                    as: 'categoryDetails',
-                },
-            },
-            {
-                $unwind: {
-                    path: '$categoryDetails',
-                    preserveNullAndEmptyArrays: true 
-                },
-            },
-            {
                 $match: {
-                    $or: [
-                        {
-                            'categoryDetails._id': categoryId
-                                ? mongoose.Types.ObjectId.createFromHexString(categoryId)
-                                : { $exists: true },
-                        },
-                    ],
-                },
+                    category: categoryId ? mongoose.Types.ObjectId.createFromHexString(categoryId) : { $exists: true }
+                }
             },
+            { $sort: { createdAt: -1 } }
         ];
-
         const products = await Product.aggregate(aggregationPipeline);
         return products;
     } catch (error) {
