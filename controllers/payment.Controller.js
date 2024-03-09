@@ -92,7 +92,6 @@ const createCheckoutSession = asyncHandler(async (req, res) => {
 });
 
 
-
 const retrieveCheckoutSession = asyncHandler(async (req, res) => {
     try {
         const orderId = req.params.id;
@@ -104,14 +103,13 @@ const retrieveCheckoutSession = asyncHandler(async (req, res) => {
         await Order.findByIdAndUpdate(orderId, { 
             orderStatus: session.status, 
             shippingAddress: session.shipping_details.address, 
-            billingAddress:session.shipping_details.address,
+            billingAddress: session.shipping_details.address,
             customerEmail: session.customer_details.email
         });
 
         const userId = req.params.userId;
         await Cart.deleteMany({ userId });
         
-       
         res.send({ session }); 
     } catch (error) {
         res.status(500).json({ error: error.message });

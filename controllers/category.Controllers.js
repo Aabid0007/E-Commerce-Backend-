@@ -8,9 +8,10 @@ const path = require('path');
 const getCategorys = asyncHandler(async (req, res) => {
     try {
         const categorys = await categoryService.getCategorysService();
-        res.status(200).json({categorys});
+
+        res.status(200).json({ status: 'success', data: categorys, message: 'Categories retrieved successfully' });
     } catch (error) {
-        res.status(500).json({ error: 'Internal Server Error' });
+        res.status(500).json({ status: 'error', message: 'Internal Server Error' });
     }
 });
 
@@ -28,7 +29,7 @@ const createCategory = asyncHandler(async (req, res) => {
             images,
             description,
         );
-        return res.status(201).json(newCategory);
+        return res.status(201).json({ status: 'success', data: newCategory, message: 'Category Create successfully' });
     } catch (error) {
         return res.status(500).json({ message: 'Internal server error' });
     }
@@ -40,11 +41,11 @@ const getCategory = asyncHandler(async (req, res) => {
     const categoryId = req.params.id;
     const category = await categoryService.getCategoryById(categoryId);
     if (!category) {
-        res.status(404);
-        throw new Error('Category not found');
+
+        res.status(404).json({ status: 'error', message: "Category not found" });
     }
 
-    res.status(200).json(category);
+    res.status(200).json({ status: 'success', data: category, message: 'Category fetched successfully' });
 });
 
 
@@ -56,8 +57,8 @@ const updateCategory = asyncHandler(async (req, res) => {
     } else {
         const category = await categoryService.getCategoryById(req.params.id);
         if (!category) {
-            res.status(404);
-            throw new Error('category not found');
+
+            res.status(404).json({ status: 'error', message: "Category not found" });
         }
         imagePath = category.images;
     }
@@ -68,7 +69,7 @@ const updateCategory = asyncHandler(async (req, res) => {
     const categoryId = req.params.id;
     const updatedCategory = await categoryService.updateCategoryService(categoryId, updateData, imagePath)
 
-    return res.status(200).json(updatedCategory);
+    return res.status(200).json({ status: 'success', data: updatedCategory, message: 'Category Edited successfully' });
 });
 
 
@@ -77,11 +78,11 @@ const deleteCategory = asyncHandler(async (req, res) => {
     const categoryId = req.params.id;
     const category = await categoryService.deleteCategoryService(categoryId);
     if (!category) {
-        res.status(404);
-        throw new Error('category not found')
+
+        res.status(404).json({ status: 'error', message: "Category not found" });
     }
 
-    res.status(200).json(category);
+    res.status(200).json({ status: 'success', data: category, message: 'Category Deleted successfully' });
 })
 
 module.exports = {

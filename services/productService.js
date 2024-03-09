@@ -3,17 +3,25 @@ const Product = require('../models/product.Model');
 const fs = require('fs').promises;
 
 // get All products
-const getProducts = async (categoryId) => {
+const getData = async (categoryId, searchQuery) => {
     try {
+        const matchStage = {};
+        
+        if (categoryId) {
+            matchStage.category = new mongoose.Types.ObjectId(categoryId);
+        }
+        if (searchQuery) {
+            matchStage.$or = [
+                { name: { $regex: searchQuery, $options: 'i' } },
+                { description: { $regex: searchQuery, $options: 'i' } }
+            ];
+        }
         const aggregationPipeline = [
-            {
-                $match: {
-                    category: categoryId ? mongoose.Types.ObjectId.createFromHexString(categoryId) : { $exists: true }
-                }
-            },
+            { $match: matchStage },
             { $sort: { createdAt: -1 } }
         ];
         const products = await Product.aggregate(aggregationPipeline);
+
         return products;
     } catch (error) {
         console.error('Error (getProducts):', error);
@@ -23,9 +31,8 @@ const getProducts = async (categoryId) => {
 
 
 
-
 // create new products
-const createProduct = async (name, description, price, quantity, category, images) => {
+const create = async (name, description, price, quantity, category, images) => {
     try {
         const newProduct = await Product.create({ name, description, price, quantity, category, images });
         return newProduct;
@@ -36,15 +43,14 @@ const createProduct = async (name, description, price, quantity, category, image
 };
  
 
-
 // get Product by id
-const getProductById = async (productId) => {
+const getById = async (productId) => {
     return await Product.findById(productId);
 };
 
 
 // update product
-const updateProduct = async (productId, updatedData, newImagePaths) => {
+const update = async (productId, updatedData, newImagePaths) => {
     const product = await Product.findById(productId);
     if (!product) {
         console.log('Product not found');
@@ -70,7 +76,7 @@ const updateProduct = async (productId, updatedData, newImagePaths) => {
 
 
 // delete product
-const deleteProduct = async (productId) => {
+const Delete = async (productId) => {
     const product = await Product.findById(productId);
     if (!product) {
         console.log('Contact not found');
@@ -93,9 +99,9 @@ const deleteProduct = async (productId) => {
 
 
 module.exports = {
-    getProducts,
-    createProduct,
-    getProductById,
-    updateProduct,
-    deleteProduct
+    getData,
+    create,
+    getById,
+    update,
+    Delete
 };

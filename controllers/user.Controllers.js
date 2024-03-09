@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 
 
 const getUser = asyncHandler(async (req, res) => {
-    const user = await User.find({role: "user"});
+    const user = await User.find({ role: "user" });
     res.status(200).json({user}); 
 })
 
@@ -15,12 +15,12 @@ const usersRegister = asyncHandler(async (req, res) => {
     const { username, email, password, phone } = req.body;
 
     if (!username || !email || !password || !phone) {
-        return res.status(400).json({ error: 'All fields are mandatory!' });
+        return res.status(400).json({ status: 'error', error: 'All fields are mandatory!' });
     }
     const userAvailable = await User.findOne({ email });
     
     if (userAvailable) {
-        return res.status(400).json({ error: "User already exists. Please choose a different email." })
+        return res.status(400).json({ status: 'error', error: "User already exists. Please choose a different email" })
     }
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -40,18 +40,18 @@ const usersRegister = asyncHandler(async (req, res) => {
 const loginUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) {
-        return res.status(400).json({ error: "Please provide both email and password" });
+        return res.status(400).json({ status: 'error', error: "Please provide both email and password" });
     }
     const user = await User.findOne({ email });
     if (!user) {
-        return res.status(401).json({ error: "user not found" });
+        return res.status(401).json({ status: 'error', error: "user not found" });
     }
     if (user.role !== "user") {
-        return res.status(403).json({ error: "Unauthorized. user access required." });
+        return res.status(403).json({ status: 'error', error: "Unauthorized. user access required." });
     }
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-        return res.status(401).json({ error: "Wrong password" })
+        return res.status(401).json({ status: 'error', error: "Wrong password" })
     }
     const Token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
