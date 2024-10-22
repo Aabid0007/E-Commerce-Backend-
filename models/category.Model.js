@@ -13,6 +13,10 @@ const categorySchema = mongoose.Schema({
         type: String,
         required: [true, "Please add the category description"],
     },
+    isDeleted: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 const Category = mongoose.model('Category', categorySchema);

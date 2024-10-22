@@ -8,6 +8,9 @@ const path = require('path');
 const getCategorys = asyncHandler(async (req, res) => {
     try {
         const categorys = await categoryService.getCategorysService();
+        if (!categorys.length) {
+            return res.status(404).json({ status: 'error', message: "Categories not found" });
+        }
 
         res.status(200).json({ status: 'success', data: categorys, message: 'Categories retrieved successfully' });
     } catch (error) {

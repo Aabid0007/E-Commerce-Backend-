@@ -4,7 +4,7 @@ const fs = require('fs').promises;
 
 // get All category
 const getCategorysService = async () => {
-    const categories = await Category.find();
+    const categories = await Category.aggregate([{ $match: { isDeleted: false }}]);
     return categories.reverse();
 };
 
@@ -51,20 +51,20 @@ const updateCategoryService = async (categoryId, updateData, newImagePath) => {
 
 
 // delete category
-const deleteCategoryService = async (categoryId) => {
+const deleteCategoryService = async (categoryId ) => {
     const category = await Category.findById(categoryId);
     if (!category) {
         console.log("Category not found");
         return null;
     }
-    if (category.images) {
-        try {
-            await fs.unlink(category.images);
-        } catch (error) {
-            console.error('Error deleting old image file:', error);
-        }
-    }
-    const deleteCategory = await Category.findByIdAndDelete(categoryId);
+    // if (category.images) {
+    //     try {
+    //         await fs.unlink(category.images);
+    //     } catch (error) {
+    //         console.error('Error deleting old image file:', error);
+    //     }
+    // }
+    const deleteCategory = await Category.findByIdAndUpdate(categoryId ,{ $set: { isDeleted: true }}, { new: true });
 
     return deleteCategory;
 }
