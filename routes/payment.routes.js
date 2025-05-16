@@ -1,5 +1,5 @@
 const express = require('express');
-const { createCheckoutSession, retrieveCheckoutSession } = require('../controllers/payment.Controller');
+const { createCheckoutSession, retrieveCheckoutSession } = require('../controllers/payment.controller');
 const { validateToken } = require('../middleware/authMiddleware');
 const router = express.Router();
 

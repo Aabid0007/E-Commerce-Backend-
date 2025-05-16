@@ -1,5 +1,5 @@
 const { constants } = require('../constants');
-const Category = require('../models/category.Model');
+const Category = require('../models/category.model');
 const ApiError = require('../utils/ApiError');
 
 const getAll = async () => {

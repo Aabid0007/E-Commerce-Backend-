@@ -1,6 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const {createProduct, getAllProducts, getProduct, updateProduct, deleteProduct, getActiveProducts} = require('../controllers/product.Controllers');
+const {
+    createProduct, 
+    getAllProducts, 
+    getProduct, 
+    updateProduct, 
+    deleteProduct, 
+    getActiveProducts
+} = require('../controllers/product.controller');
 const upload  = require('../config/multer');
 const multer = require('multer');
 const { validateToken, isAdmin } = require('../middleware/authMiddleware');

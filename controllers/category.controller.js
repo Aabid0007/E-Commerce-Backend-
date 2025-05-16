@@ -1,5 +1,5 @@
 const asyncHandler = require('express-async-handler');
-const categoryService = require('../services/CategoryService');
+const categoryService = require("../services/category.service");
 const path = require('path');
 const { constants } = require('../constants');
 const ApiError = require('../utils/ApiError');

@@ -1,6 +1,6 @@
 const express = require('express');
 const multer = require('multer');
-const { getAllCategories, getActiveCategories, createCategory, getCategory, updateCategory, deleteCategory, } = require('../controllers/category.Controllers');
+const { getAllCategories, getActiveCategories, createCategory, getCategory, updateCategory, deleteCategory, } = require('../controllers/category.controller');
 const upload  = require('../config/multer');
 const { validateToken, isAdmin } = require('../middleware/authMiddleware');
 const router = express.Router();

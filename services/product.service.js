@@ -1,5 +1,5 @@
 const { default: mongoose } = require('mongoose');
-const Product = require('../models/product.Model');
+const Product = require('../models/product.model');
 const fs = require('fs').promises;
 
 // get All products

@@ -1,4 +1,4 @@
-const Order = require("../models/order.Model");
+const Order = require("../models/order.model");
 const asyncHandler = require("express-async-handler");
 
 const getAllOrdersService = asyncHandler(async (req, res) => {
