@@ -22,7 +22,10 @@ const paymentSchema = mongoose.Schema({
     paymentDate: {
         type: Date,
         default: Date.now,
-    }
+    },
+    transactionId: { 
+        type: String 
+    },
 });
 
 const Payment = mongoose.model('Payment', paymentSchema);

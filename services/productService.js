@@ -3,10 +3,9 @@ const Product = require('../models/product.Model');
 const fs = require('fs').promises;
 
 // get All products
-const getData = async (categoryId, searchQuery) => {
+const getAll = async (categoryId, searchQuery) => {
     try {
         const matchStage = {};
-        
         if (categoryId) {
             matchStage.category = new mongoose.Types.ObjectId(categoryId);
         }
@@ -18,23 +17,58 @@ const getData = async (categoryId, searchQuery) => {
         }
         const aggregationPipeline = [
             { $match: matchStage },
-            { $sort: { createdAt: -1 } }
+            { $sort: { createdAt: -1 }}
         ];
         const products = await Product.aggregate(aggregationPipeline);
 
         return products;
     } catch (error) {
-        console.error('Error (getProducts):', error);
-        throw error;
+        console.error('Error in product aggregation:', error.message);
+        throw new Error('Failed to retrieve products');
     }
+};
+
+const getActive = async () => {
+    const products = await Product.aggregate([
+        { $match: { isActive: true }},
+        { $sort: { _id: -1 }}
+    ]);
+    return products
 };
 
 
 
 // create new products
-const create = async (name, description, price, quantity, category, images) => {
+const create = async ( 
+    product_name,
+    product_description,
+    brand,
+    slug,
+    categoryId,
+    subCategoryId,
+    specifications,
+    isFeatured,
+    isActive,
+    metaTitle,
+    metaDescription,) => {
     try {
-        const newProduct = await Product.create({ name, description, price, quantity, category, images });
+        const slugExist = await Product.findOne({ slug });
+        if (slugExist) {
+            throw new Error("Name already exists. Please choose a different name");
+        }
+        const newProduct = await Product.create({ 
+            product_name,
+            product_description,
+            brand,
+            slug,
+            categoryId,
+            subCategoryId,
+            specifications,
+            isFeatured,
+            isActive,
+            metaTitle,
+            metaDescription,
+         });
         return newProduct;
     } catch (error) {
         console.error('Error creating product:', error);
@@ -79,7 +113,7 @@ const update = async (productId, updatedData, newImagePaths) => {
 const Delete = async (productId) => {
     const product = await Product.findById(productId);
     if (!product) {
-        console.log('Contact not found');
+        console.log('Product not found');
         return null;
     }
     if (product.images) {
@@ -96,12 +130,11 @@ const Delete = async (productId) => {
     return deleteProduct;
 };
 
-
-
 module.exports = {
-    getData,
+    getAll,
+    getActive,
     create,
     getById,
     update,
-    Delete
+    Delete,
 };

@@ -1,97 +1,122 @@
 const asyncHandler = require('express-async-handler');
 const categoryService = require('../services/CategoryService');
 const path = require('path');
+const { constants } = require('../constants');
+const ApiError = require('../utils/ApiError');
+
+// get All categories
+const getAllCategories = asyncHandler(async (req, res) => {
+    const categories = await categoryService.getAll();
+
+    return res.status(200).json({
+        status: 'success',
+        message: categories.length === 0
+            ? 'No Categories found'
+            : 'Categories retrieved successfully',
+        data: categories,
+    });
+})
 
 
+// get all active categories
+const getActiveCategories = asyncHandler(async (req, res) => {
+    const activeCategories = await categoryService.getActive();
 
-// get All categorys
-const getCategorys = asyncHandler(async (req, res) => {
-    try {
-        const categorys = await categoryService.getCategorysService();
-        if (!categorys.length) {
-            return res.status(404).json({ status: 'error', message: "Categories not found" });
-        }
-
-        res.status(200).json({ status: 'success', data: categorys, message: 'Categories retrieved successfully' });
-    } catch (error) {
-        res.status(500).json({ status: 'error', message: 'Internal Server Error' });
-    }
+    return res.status(200).json({
+        status: 'success',
+        message: activeCategories.length === 0
+            ? 'No active Categories found'
+            : 'Categories retrieved successfully',
+        data: activeCategories,
+    });
 });
 
 
-// create new products
+// create new Category
 const createCategory = asyncHandler(async (req, res) => {
     const { name, description } = req.body;
-    const images = req.file ? req.file.path : null;
-    if (!images || !name || !description) {
-        return res.status(400).json({ message: 'All fields are mandatory!' });
+    const image = req.file ? req.file.path : null;
+    if (!name || !description || !image) {
+        throw new ApiError(constants.VALIDATION_ERROR, "All fields are mandatory!");
     }
-    try {
-        const newCategory = await categoryService.createCategoryService(
-            name,
-            images,
-            description,
-        );
-        return res.status(201).json({ status: 'success', data: newCategory, message: 'Category Create successfully' });
-    } catch (error) {
-        return res.status(500).json({ message: 'Internal server error' });
-    }
+    const newCategory = await categoryService.create(
+        name,
+        image,
+        description,
+    );
+
+    return res.status(201).json({
+        status: 'success',
+        message: 'Category create successfully',
+        data: newCategory,
+    });
 });
 
 
 // get category by Id 
 const getCategory = asyncHandler(async (req, res) => {
     const categoryId = req.params.id;
-    const category = await categoryService.getCategoryById(categoryId);
-    if (!category) {
+    const category = await categoryService.getById(categoryId);
 
-        res.status(404).json({ status: 'error', message: "Category not found" });
-    }
-
-    res.status(200).json({ status: 'success', data: category, message: 'Category fetched successfully' });
+    return res.status(200).json({
+        status: 'success',
+        message: 'Category retrieved successfully',
+        data: category,
+    });
 });
 
 
 // update Category
 const updateCategory = asyncHandler(async (req, res) => {
-    let imagePath;
-    if (req.file) {
-        imagePath = path.join('uploads', req.file.filename);
-    } else {
-        const category = await categoryService.getCategoryById(req.params.id);
-        if (!category) {
-
-            res.status(404).json({ status: 'error', message: "Category not found" });
-        }
-        imagePath = category.images;
-    }
+    const categoryId = req.params.id;
+    const imagePath = req.file ? path.join('uploads', req.file.filename) : undefined;
     const updateData = {
         ...req.body,
-        ...(imagePath ? { images: imagePath } : {}),
+        ...(imagePath && { image: imagePath }),
     };
-    const categoryId = req.params.id;
-    const updatedCategory = await categoryService.updateCategoryService(categoryId, updateData, imagePath)
+    const updatedCategory = await categoryService.update(categoryId, updateData)
 
-    return res.status(200).json({ status: 'success', data: updatedCategory, message: 'Category Edited successfully' });
+    return res.status(200).json({
+        status: 'success',
+        message: 'Category updated successfully',
+        data: updatedCategory,
+    });
+});
+
+
+// set category Status
+const setCategoryStatus = asyncHandler(async (req, res) => {
+    const categoryId = req.params.id;
+    const { status } = req.body;
+    const setCategory = await categoryService.changeStatus(categoryId, status);
+
+    return res.status(200).json({
+        status: "success",
+        message: "SubCategory status updated successfully",
+        data: setCategory,
+    })
 });
 
 
 // delete Category 
 const deleteCategory = asyncHandler(async (req, res) => {
     const categoryId = req.params.id;
-    const category = await categoryService.deleteCategoryService(categoryId);
-    if (!category) {
+    const deletedCategory = await categoryService.remove(categoryId);
 
-        res.status(404).json({ status: 'error', message: "Category not found" });
-    }
-
-    res.status(200).json({ status: 'success', data: category, message: 'Category Deleted successfully' });
+    return res.status(200).json({
+        status: 'success',
+        message: 'Category deleted successfully',
+        data: deletedCategory,
+    });
 })
 
+
 module.exports = {
-    getCategorys,
+    getAllCategories,
+    getActiveCategories,
     createCategory,
     getCategory,
     updateCategory,
     deleteCategory,
+    setCategoryStatus
 };

@@ -1,35 +1,71 @@
 const mongoose = require("mongoose");
 
+const specificationSchema = new mongoose.Schema({
+    key: { type: String, required: true },
+    value: { type: String, required: true }
+}, { _id: false });
+
+
 const productSchema = mongoose.Schema({
-    images: [{
-        type: String,
-        required: [true, "please add the product profilePicture"],
-    }],
-    name: {
+    product_name: {
         type: String,
         required: [true, "please add the product name"],
+        trim: true,
+        unique: true
     },
-    description: {
+    image: { 
+        type: String,
+        required: true
+    },
+    product_description: {
         type: String,
         required: [true, "please add the product description"],
+        trim: true
     },
-    price: {
-        type: Number,
-        required: [true, "please add the product price"],
+    brand: {
+        type: String
     },
-    quantity: {
-        type: Number,
-        default: 0,
+    slug: {
+        type: String,
+        required: true,
+        unique: true,
+        trim: true
     },
-    category: {
+    categoryId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category',
+        required: true
     },
-
-  },
-     {
+    subCategoryId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'SubCategory',
+        required: true
+    },
+    specifications: [specificationSchema],
+    isFeatured: {
+        type: Boolean,
+        default: false
+    },
+    isActive: {
+        type: Boolean,
+        default: true
+    },
+    salesCount: {
+        type: Number,
+        default: 0
+    },
+    metaTitle: {
+        type: String,
+        trim: true
+    },
+    metaDescription: {
+        type: String,
+        trim: true
+    },
+},
+    {
         timestamps: true,
-     }
+    }
 );
 
 const Product = mongoose.model('Product', productSchema);

@@ -1,80 +1,105 @@
+const { constants } = require('../constants');
 const Category = require('../models/category.Model');
-const fs = require('fs').promises;
+const ApiError = require('../utils/ApiError');
 
+const getAll = async () => {
+    const categories = await Category.find().sort({_id: -1});
 
-// get All category
-const getCategorysService = async () => {
-    const categories = await Category.aggregate([{ $match: { isDeleted: false }}]);
-    return categories.reverse();
+    return categories;
+}
+
+// get all active category
+const getActive = async () => {
+    const categories = await Category.aggregate([
+        { $match: { isActive: true } },
+        { $sort: { _id: -1 } }
+    ]);
+
+    return categories;
 };
 
 
 // create new category 
-const createCategoryService = async (name, images, description) => {
-    try {
-        const newCategory = await Category.create({ name, images, description });
-        return newCategory;
-    } catch (error) {
-        console.error('Error creating product:', error);
-        throw error;
+const create = async (name, image, description) => {
+    const nameExist = await Category.findOne({ name });
+    if (nameExist) {
+        throw new ApiError(constants.VALIDATION_ERROR, 
+            "Name already exists. Please choose a different name"
+        );
     }
+    const newCategory = await Category.create({ name, image, description });
+
+    return newCategory;
 };
 
 
 // get category by Id
-const getCategoryById = async (categoryId) => {
-    return await Category.findById(categoryId);
+const getById = async (categoryId) => {
+    const category = await Category.findById(categoryId);
+    if (!category) {
+        throw new ApiError(constants.NOT_FOUND, 'Category not found')
+    }
+
+    return category;
 };
 
 
 // update category
-const updateCategoryService = async (categoryId, updateData, newImagePath) => {
+const update = async (categoryId, updateData) => {
     const category = await Category.findById(categoryId);
     if (!category) {
-        console.log("Category not found");
-        return null;
+        throw new ApiError(constants.NOT_FOUND, 'Category not found')
     }
-    if (newImagePath && newImagePath !== category.images) {
-        if (category.images) {
-            try {
-                await fs.unlink(category.images);
-            } catch (error) {
-                console.error('Error deleting old image file:', error);
-            }
+    const name = updateData.name?.trim();
+    if (name) {
+        const nameExist = await Category.findOne({ name });
+        if (nameExist && nameExist._id.toString() !== categoryId) {
+            throw new ApiError(constants.VALIDATION_ERROR, "Name already exists. Please choose a different name");
         }
-        updateData.images = newImagePath;
     }
-    const editedCategory = await Category.findByIdAndUpdate(categoryId, updateData, { new: true });
+
+    const editedCategory = await Category.findByIdAndUpdate(
+        categoryId, 
+        updateData, 
+        { new: true }
+    );
 
     return editedCategory;
 };
 
 
-// delete category
-const deleteCategoryService = async (categoryId ) => {
+const changeStatus = async (categoryId, status) => {
     const category = await Category.findById(categoryId);
     if (!category) {
-        console.log("Category not found");
-        return null;
+        throw new ApiError(constants.NOT_FOUND, 'Category not found')
     }
-    // if (category.images) {
-    //     try {
-    //         await fs.unlink(category.images);
-    //     } catch (error) {
-    //         console.error('Error deleting old image file:', error);
-    //     }
-    // }
-    const deleteCategory = await Category.findByIdAndUpdate(categoryId ,{ $set: { isDeleted: true }}, { new: true });
+    const updatedCategory = await Category.findByIdAndUpdate(
+        categoryId,
+        { isActive: status },
+        { new: true }
+    );
 
-    return deleteCategory;
+    return updatedCategory;
 }
 
 
+// delete category
+const remove = async (categoryId) => {
+    const category = await Category.findByIdAndDelete(categoryId);
+    if (!category) {
+        throw new ApiError(constants.NOT_FOUND, 'Category not found');
+    }
+
+    return category;
+};
+
 
 module.exports = {
-    getCategorysService,
-    createCategoryService,
-    getCategoryById,
-    updateCategoryService,
-    deleteCategoryService,
+    getAll,
+    getActive,
+    create,
+    getById,
+    update,
+    changeStatus,
+    remove
 }

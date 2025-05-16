@@ -33,6 +33,10 @@ const orderSchema = mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+    saleCountUpdated: { 
+        type: Boolean, 
+        default: false 
+    },
 });
 
 const Order = mongoose.model('Order', orderSchema);

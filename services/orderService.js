@@ -4,7 +4,6 @@ const asyncHandler = require("express-async-handler");
 const getAllOrdersService = asyncHandler(async (req, res) => {
     try {
         const orders = await Order.aggregate([{ $match: { orderStatus: "complete" } }]);
-
         return orders;
     } catch (error) {
         console.error('Error (getAllOrders):', error);
